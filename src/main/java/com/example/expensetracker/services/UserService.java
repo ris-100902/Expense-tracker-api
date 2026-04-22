@@ -10,10 +10,12 @@ import com.example.expensetracker.repositories.UserRepository;
 public class UserService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder encoder, JwtService service) {
         this.userRepository = userRepository;
         this.passwordEncoder = encoder;
+        this.jwtService = service;
     }
 
     public User addUser(User user) {
@@ -23,5 +25,14 @@ public class UserService{
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(newUser);
         return newUser;
+    }
+
+    public String loginUser(User inputUser) {
+        String inputEmail = inputUser.getEmail();
+        User fetchedUser = this.userRepository.findByEmail(inputEmail).orElseThrow();
+        if (!passwordEncoder.matches(inputUser.getPassword(), fetchedUser.getPassword())) {
+            throw new RuntimeException("Invalid Credentials");
+        }
+        return jwtService.generateToken(inputUser);
     }
 }

@@ -30,4 +30,11 @@ public class UserController {
         User newUser = this.userService.addUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<String>loginUser(@RequestBody User user) {
+        String generatedToken = this.userService.loginUser(user);
+        String tokenBody = "{ token : " + generatedToken + "}";
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(tokenBody);
+    }
 }
