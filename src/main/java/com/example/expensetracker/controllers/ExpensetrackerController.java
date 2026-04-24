@@ -1,5 +1,6 @@
 package com.example.expensetracker.controllers;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,8 +30,11 @@ public class ExpensetrackerController {
     }
 
     @GetMapping("/expenses")
-    public ResponseEntity<List<Expense>> getAllExpenses(@AuthenticationPrincipal User user){
-        List<Expense> allExpenses = this.expenseService.getExpenses(user);
+    public ResponseEntity<List<Expense>> getAllExpenses(@AuthenticationPrincipal User user, @RequestParam(required=false) String date, @RequestParam(required=false) LocalDate start, @RequestParam(required=false) LocalDate end){
+        List<Expense> allExpenses;
+        if (date==null && start==null) allExpenses = this.expenseService.getExpenses(user);
+        else if (date!=null) allExpenses = this.expenseService.getExpenses(user, date);
+        else allExpenses = this.expenseService.getExpenses(user, start, end);
         return ResponseEntity.status(HttpStatus.OK).body(allExpenses);
     }
 
@@ -46,7 +51,7 @@ public class ExpensetrackerController {
     }
 
     @PutMapping("/expenses/{id}")
-    public ResponseEntity<Expense> updateExpense(@AuthenticationPrincipal User user, @RequestParam Integer id, @RequestBody Expense newExpense) {
+    public ResponseEntity<Expense> updateExpense(@AuthenticationPrincipal User user, @PathVariable Integer id, @RequestBody Expense newExpense) {
         Expense updatedExpense = this.expenseService.updateExpense(user, id, newExpense);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(updatedExpense);
     }

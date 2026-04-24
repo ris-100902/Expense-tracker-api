@@ -1,7 +1,13 @@
 package com.example.expensetracker.entities;
 
+import java.time.LocalDateTime;
+
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Expense {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -29,6 +36,10 @@ public class Expense {
     @ManyToOne
     @JoinColumn(name="user_Id", nullable=false)
     private User user;
+
+    @CreatedDate
+    @Column(nullable=false, updatable=false)
+    private LocalDateTime createdAt;
 
     public Integer getId() {
         return id;
@@ -68,6 +79,10 @@ public class Expense {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.expensetracker.repositories;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Integer> {
 
     @Query(value="SELECT * FROM Expense WHERE id=:expenseId AND user_id=:userId", nativeQuery=true)
     Expense getExpense(Integer userId, Integer expenseId);
+
+    List<Expense> findByUserIdAndCreatedAtBetween(Integer userId, LocalDateTime start, LocalDateTime end);
 }
