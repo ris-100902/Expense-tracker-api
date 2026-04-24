@@ -1,5 +1,9 @@
 package com.example.expensetracker.controllers;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,18 +13,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.expensetracker.entities.Expense;
 import com.example.expensetracker.entities.User;
+import com.example.expensetracker.services.ExpenseService;
 
 @RestController
 @RequestMapping("/api")
 public class ExpensetrackerController {
+    private final ExpenseService expenseService;
+
+    public ExpensetrackerController(ExpenseService service) {
+        this.expenseService = service;
+    }
+
     @GetMapping("/expenses")
-    public String getAllExpenses(){
-        return "All";
+    public ResponseEntity<List<Expense>> getAllExpenses(@AuthenticationPrincipal User user){
+        List<Expense> allExpenses = this.expenseService.getExpenses(user);
+        return ResponseEntity.status(HttpStatus.OK).body(allExpenses);
     }
 
     @PostMapping("/expenses")
-    public String addExpense(@RequestBody Expense expense, @AuthenticationPrincipal User user) {
-        IO.println("User: "+ user.getEmail());
-        return "Added";
+    public ResponseEntity<Expense> addExpense(@RequestBody Expense expense, @AuthenticationPrincipal User user) {
+        Expense newExpense = this.expenseService.addExpense(expense, user.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(newExpense);
     }
 }
