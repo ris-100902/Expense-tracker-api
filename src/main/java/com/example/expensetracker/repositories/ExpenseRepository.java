@@ -12,4 +12,7 @@ import com.example.expensetracker.entities.Expense;
 public interface ExpenseRepository extends JpaRepository<Expense, Integer> {
     @Query(value="SELECT * FROM Expense WHERE user_id=:userId", nativeQuery=true)
     List<Expense> getAllExpenses(Integer userId);
+
+    @Query(value="SELECT * FROM Expense WHERE id=:expenseId AND user_id=:userId", nativeQuery=true)
+    Expense getExpense(Integer userId, Integer expenseId);
 }

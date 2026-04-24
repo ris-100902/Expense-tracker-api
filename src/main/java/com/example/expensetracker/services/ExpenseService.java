@@ -27,7 +27,22 @@ public class ExpenseService {
     }
 
     public List<Expense> getExpenses(User inputUser){
-        // User inputUser = this.userRepository.findByEmail(userEmail).orElseThrow(() -> new RuntimeException("No such User"));
         return this.expenseRepository.getAllExpenses(inputUser.getId());
+    }
+
+    public Expense deleteExpense(User inputUser, Integer expenseId) {
+        Expense toDeleteExpense = this.expenseRepository.getExpense(inputUser.getId(), expenseId);
+        if (toDeleteExpense == null) throw new RuntimeException("No such expense or unauthorized");
+        this.expenseRepository.deleteById(expenseId);
+        return toDeleteExpense;
+    }
+
+    public Expense updateExpense(User inputUser, Integer expenseId, Expense newExpense) {
+        Expense toUpdateExpense = this.expenseRepository.getExpense(inputUser.getId(), expenseId);
+        if (toUpdateExpense == null) throw new RuntimeException("No such expense or unauthorized");
+        toUpdateExpense.setCategory(newExpense.getCategory());
+        toUpdateExpense.setCost(newExpense.getCost());
+        toUpdateExpense.setTitle(newExpense.getTitle());
+        return toUpdateExpense;
     }
 }
